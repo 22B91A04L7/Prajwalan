@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { Text, TextInput, Button, HelperText } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
 const RegistrationScreen = () => {
   const navigation = useNavigation();
@@ -22,11 +23,6 @@ const RegistrationScreen = () => {
     setNumTeams(value.replace(/[^0-9]/g, ""));
   };
 
-  const validatePassword = (pwd) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(pwd);
-  };
-
   const handlePasswordChange = (pwd) => {
     setPassword(pwd);
     if (confirmPassword && confirmPassword !== pwd) {
@@ -41,9 +37,42 @@ const RegistrationScreen = () => {
     setPasswordError(password !== pwd ? "Passwords do not match" : "");
   };
 
-  const validateUserId = (uid) => {
-    const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,}$/;
-    return regex.test(uid);
+  const handleRegister = async () => {
+    if (userId.length < 8) {
+      alert("User ID must be at least 8 characters long.");
+      return;
+    }
+    if (password.length < 8) {
+      alert("Password must be at least 8 characters long.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:5000/register", {
+        organizationLicenseId,
+        organizationName,
+        hodName,
+        age: Number(age),  // Ensure age is a number
+        gender,
+        workLocation,
+        numTeams: Number(numTeams),  // Ensure numTeams is a number
+        userId,
+        password,
+      });
+
+      alert(response.data.message);
+      navigation.navigate("Login"); // Redirect to login screen after registration
+    } catch (error) {
+      if (error.response) {
+        alert(`Error: ${error.response.data.message}`);
+      } else {
+        alert("Server not reachable. Check your connection.");
+      }
+    }
   };
 
   return (
@@ -67,35 +96,15 @@ const RegistrationScreen = () => {
 
       <TextInput label="Work Location" value={workLocation} onChangeText={setWorkLocation} mode="outlined" style={styles.input} />
       <TextInput label="No. of Teams" value={numTeams} onChangeText={handleNumTeamsChange} keyboardType="numeric" maxLength={4} mode="outlined" style={styles.input} />
-
-      <TextInput label="User ID (min 8 chars, 1 special char, 1 numerical)" value={userId} onChangeText={setUserId} mode="outlined" style={styles.input} />
-      <TextInput label="Password (8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char)" value={password} onChangeText={handlePasswordChange} secureTextEntry mode="outlined" style={styles.input} />
+      <TextInput label="User ID (min 8 chars)" value={userId} onChangeText={setUserId} mode="outlined" style={styles.input} />
+      <TextInput label="Password" value={password} onChangeText={handlePasswordChange} secureTextEntry mode="outlined" style={styles.input} />
       <TextInput label="Confirm Password" value={confirmPassword} onChangeText={handleConfirmPasswordChange} secureTextEntry mode="outlined" style={styles.input} />
 
       {passwordError ? <HelperText type="error">{passwordError}</HelperText> : null}
 
-      <Button mode="contained" onPress={() => {
-          if (!validateUserId(userId)) {
-            alert("User ID does not meet the requirements.");
-            return;
-          }
-          if (!validatePassword(password)) {
-            alert("Password does not meet the requirements.");
-            return;
-          }
-          if (password !== confirmPassword) {
-            alert("Passwords do not match.");
-            return;
-          }
-          alert("Registration Submitted");
-        }}
-        style={styles.button}
-      >
+      <Button mode="contained" onPress={handleRegister} style={styles.button}>
         Next
       </Button>
-
-      <TouchableOpacity style={styles.registrationButton} onPress={() => navigation.navigate("Policereg")}> 
-      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -108,8 +117,7 @@ const styles = StyleSheet.create({
   picker: { height: 50 },
   label: { fontSize: 16, color: "#333", marginBottom: 3 },
   button: { marginTop: 0, marginBottom: 15, padding: 6 },
-  registrationButton: { marginTop: 20, padding: 10, alignItems: "center" },
-  registrationText: { fontSize: 16, color: "#007BFF", fontWeight: "bold" },
-});
+}
+);
 
 export default RegistrationScreen;

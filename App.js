@@ -16,6 +16,8 @@ import Policereg from './app/Policereg';
 import CycloneTracker from './app/CycloneTracker';
 import ShareLocation  from './app/ShareLocation';
 import PoliceStations  from './app/PoliceStations';
+import NDRFhomescreen  from './app/NDRFhomescreen';
+
 
 
 
@@ -44,6 +46,7 @@ export default function App() {
         <Stack.Screen name="CycloneTracker" component={CycloneTracker} />
         <Stack.Screen name="ShareLocation" component={ShareLocation} />
         <Stack.Screen name="PoliceStations" component={PoliceStations} />
+        <Stack.Screen name="NDRFhomescreen" component={NDRFhomescreen} />
 
 
 
