@@ -34,17 +34,19 @@ const MainPage = () => {
           <Text style={styles.text}>Police Stations</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Alerts')}>
-          <FontAwesome5 name="bell" size={40} color="#fff" />
-          <Text style={styles.text}>Alerts</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Rescue')}>
-          <FontAwesome5 name="ambulance" size={40} color="#fff" />
-          <Text style={styles.text}>Rescue</Text>
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('safeHouse')}>
+  <FontAwesome5 name="home" size={40} color="#fff" />
+  <Text style={styles.text}>Safehouse</Text>
+</TouchableOpacity>
 
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Missing')}>
+<TouchableOpacity style={styles.item} onPress={() => navigation.navigate('chatBot')}>
+  <FontAwesome5 name="robot" size={40} color="#fff" />
+  <Text style={styles.text}>Chat Bot</Text>
+</TouchableOpacity>
+
+
+        {/* <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Alerts')}>
           <FontAwesome5 name="user-times" size={40} color="#fff" />
           <Text style={styles.text}>Missing</Text>
         </TouchableOpacity>
@@ -52,17 +54,8 @@ const MainPage = () => {
         <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Medical')}>
           <FontAwesome5 name="clinic-medical" size={40} color="#fff" />
           <Text style={styles.text}>Medical</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Food')}>
-          <FontAwesome5 name="utensils" size={40} color="#fff" />
-          <Text style={styles.text}>Food</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Notice')}>
-          <FontAwesome5 name="bullhorn" size={40} color="#fff" />
-          <Text style={styles.text}>Notice</Text>
-        </TouchableOpacity>
       </View>
     </LinearGradient>
   );

@@ -24,7 +24,7 @@ const HomeScreen = () => {
           { title: 'Government Agency', icon: 'account-balance', screen: 'GovernmentAgencyScreen' },
           { title: 'Public', icon: 'people', screen: 'UserDashboard' },
           { title: 'Donators', icon: 'volunteer-activism', screen: 'DonateScreen' },
-          { title: 'Emergency Numbers', icon: 'phone', screen: 'HelplineNumber' },
+          { title: 'Emergency Toll-free No.', icon: 'phone', screen: 'HelplineNumber' },
         ].map((item, index) => (
           <TouchableOpacity
             key={index}

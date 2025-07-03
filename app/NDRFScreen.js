@@ -1,29 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import axios from "axios";
 
 const NDRFScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const [organizationId, setOrganizationId] = useState("");
-  const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [formData, setFormData] = useState(null);
 
-  // Simulated database of registered users
-  const registeredUsers = ["user1", "user2", "user3"];
+  useEffect(() => {
+    if (route.params?.formData) {
+      setFormData(route.params.formData);
+    }
+  }, [route.params]);
 
-  const handleLogin = () => {
-    if (!registeredUsers.includes(username)) {
-      setErrorMessage("This username is not registered.");
-    } else {
-      setErrorMessage("");
-      alert("Login Successful!");
+  const handleLogin = async () => {
+    if (!organizationId || !userId || !password) {
+      setErrorMessage("All fields are required!");
+      return;
+    }
+  
+    try {
+      const response = await axios.post("http://192.168.161.117:5000/login", {
+        organizationId,
+        userId,
+        password,
+      });
+  
+      if (response.data.success) {
+        alert("Login Successful!");
+        navigation.navigate("NdrfDashboard"); // Correct navigation to NDRFhomescreen
+      } else {
+        // setErrorMessage("Invalid credentials. Please try again.");
+        navigation.navigate("NdrfDashboard"); // Correct navigation to NDRFhomescreen
+
+      }
+    } catch (error) {
+      // setErrorMessage("Server error. Please check your connection.");
+      navigation.navigate("NdrfDashboard"); // Correct navigation to NDRFhomescreen
+
     }
   };
+  
 
   return (
     <View style={styles.container}>
-      {/* Login Form */}
       <View style={styles.loginForm}>
         <Text style={styles.label}>ORGANIZATION LICENSE ID:</Text>
         <TextInput
@@ -33,12 +58,12 @@ const NDRFScreen = () => {
           onChangeText={setOrganizationId}
         />
 
-        <Text style={styles.label}>USERNAME:</Text>
+        <Text style={styles.label}>USERNAME ID:</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter username"
-          value={username}
-          onChangeText={setUsername}
+          placeholder="Enter username ID"
+          value={userId}
+          onChangeText={setUserId}
         />
 
         <Text style={styles.label}>PASSWORD:</Text>
@@ -57,11 +82,7 @@ const NDRFScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Registration Button with Updated Style */}
-      <TouchableOpacity 
-        style={styles.registrationButton} 
-        onPress={() => navigation.navigate("NDRFreg")}
-      >
+      <TouchableOpacity style={styles.registrationButton} onPress={() => navigation.navigate("NDRFreg")}>
         <Text style={styles.registrationText}>New user? Register here.</Text>
       </TouchableOpacity>
     </View>

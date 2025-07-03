@@ -5,6 +5,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
+
 const RegistrationScreen = () => {
   const navigation = useNavigation();
   const [organizationLicenseId, setOrganizationLicenseId] = useState("");
@@ -50,9 +51,10 @@ const RegistrationScreen = () => {
       alert("Passwords do not match.");
       return;
     }
-
+    
     try {
-      const response = await axios.post("http://localhost:5000/register", {
+      
+      const response = await axios.post("http://192.168.101.6:5000/register", {
         organizationLicenseId,
         organizationName,
         hodName,
@@ -63,9 +65,15 @@ const RegistrationScreen = () => {
         userId,
         password,
       });
+      
+    
 
       alert(response.data.message);
-      navigation.navigate("Login"); // Redirect to login screen after registration
+      // navigation.navigate("NDRFScreen"); 
+      
+      navigation.repeat("NDRFScreen");
+
+      
     } catch (error) {
       if (error.response) {
         alert(`Error: ${error.response.data.message}`);
@@ -111,12 +119,12 @@ const RegistrationScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 32, backgroundColor: "#f5f5f5" },
-  header: { fontSize: 26, fontWeight: "bold", marginBottom: 20, textAlign: "center", color: "#007bff" },
+  header: { fontSize: 26, fontWeight: "bold", marginBottom: 5, textAlign: "center", color: "#007bff" },
   input: { marginBottom: 15, backgroundColor: "white" },
   pickerContainer: { borderWidth: 1, borderColor: "#ccc", borderRadius: 5, marginBottom: 15, backgroundColor: "white", paddingHorizontal: 10 },
   picker: { height: 50 },
-  label: { fontSize: 16, color: "#333", marginBottom: 3 },
-  button: { marginTop: 0, marginBottom: 15, padding: 6 },
+  label: { fontSize: 16, color: "#333", marginBottom: 15 },
+  button: { marginTop: 0, marginBottom: 50, padding: 6 },
 }
 );
 

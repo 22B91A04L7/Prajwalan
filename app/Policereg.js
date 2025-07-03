@@ -2,30 +2,22 @@ import React, { useState } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { Text, TextInput, Button, HelperText } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
-import { useNavigation } from "@react-navigation/native"; // Import useNavigation hook
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
-const RegistrationScreen = () => {
-  const navigation = useNavigation(); // Initialize navigation
-  const [organizationLicenseId, setOrganizationLicenseId] = useState("");
-  const [organizationName, setOrganizationName] = useState("");
-  const [hodName, setHodName] = useState("");
+const PoliceRegistrationScreen = () => {
+  const navigation = useNavigation();
+  const [policeId, setPoliceId] = useState("");
+  const [stationName, setStationName] = useState("");
+  const [officerName, setOfficerName] = useState("");
   const [workLocation, setWorkLocation] = useState("");
-  const [numTeams, setNumTeams] = useState("");
+  const [rank, setRank] = useState("");
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
-
-  const handleNumTeamsChange = (value) => {
-    setNumTeams(value.replace(/[^0-9]/g, ""));
-  };
-
-  const validatePassword = (pwd) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(pwd);
-  };
 
   const handlePasswordChange = (pwd) => {
     setPassword(pwd);
@@ -41,18 +33,52 @@ const RegistrationScreen = () => {
     setPasswordError(password !== pwd ? "Passwords do not match" : "");
   };
 
-  const validateUserId = (uid) => {
-    const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,}$/;
-    return regex.test(uid);
+  const handleRegister = async () => {
+    if (userId.length < 8) {
+      alert("User ID must be at least 8 characters long.");
+      return;
+    }
+    if (password.length < 8) {
+      alert("Password must be at least 8 characters long.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+    
+    try {
+      const response = await axios.post("http://192.168.161.117:5000/register", {
+        policeId,
+        stationName,
+        officerName,
+        age: Number(age),
+        gender,
+        workLocation,
+        rank,
+        userId,
+        password,
+      });
+
+      alert(response.data.message);
+      navigation.replace("PoliceScreen"); 
+
+    } catch (error) {
+      if (error.response) {
+        alert(`Error: ${error.response.data.message}`);
+      } else {
+        alert("Server not reachable. Check your connection.");
+      }
+    }
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Police Registration</Text>
+      <Text style={styles.header}>Police Officer Registration</Text>
 
-      <TextInput label="Organization License ID" value={organizationLicenseId} onChangeText={setOrganizationLicenseId} mode="outlined" style={styles.input} />
-      <TextInput label="Organization Name" value={organizationName} onChangeText={setOrganizationName} mode="outlined" style={styles.input} />
-      <TextInput label="HOD Name" value={hodName} onChangeText={setHodName} mode="outlined" style={styles.input} />
+      <TextInput label="Police ID" value={policeId} onChangeText={setPoliceId} mode="outlined" style={styles.input} />
+      <TextInput label="Station Name" value={stationName} onChangeText={setStationName} mode="outlined" style={styles.input} />
+      <TextInput label="Officer Name" value={officerName} onChangeText={setOfficerName} mode="outlined" style={styles.input} />
       <TextInput label="Age" value={age} onChangeText={setAge} keyboardType="numeric" mode="outlined" style={styles.input} />
 
       <View style={styles.pickerContainer}>
@@ -66,46 +92,31 @@ const RegistrationScreen = () => {
       </View>
 
       <TextInput label="Work Location" value={workLocation} onChangeText={setWorkLocation} mode="outlined" style={styles.input} />
-      <TextInput label="No. of Teams" value={numTeams} onChangeText={handleNumTeamsChange} keyboardType="numeric" maxLength={4} mode="outlined" style={styles.input} />
-
-      <TextInput label="User ID (min 8 chars, 1 special char, 1 numerical)" value={userId} onChangeText={setUserId} mode="outlined" style={styles.input} />
-      <TextInput label="Password (8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char)" value={password} onChangeText={handlePasswordChange} secureTextEntry mode="outlined" style={styles.input} />
+      <TextInput label="Rank" value={rank} onChangeText={setRank} mode="outlined" style={styles.input} />
+      <TextInput label="User ID (min 8 chars)" value={userId} onChangeText={setUserId} mode="outlined" style={styles.input} />
+      <TextInput label="Password" value={password} onChangeText={handlePasswordChange} secureTextEntry mode="outlined" style={styles.input} />
       <TextInput label="Confirm Password" value={confirmPassword} onChangeText={handleConfirmPasswordChange} secureTextEntry mode="outlined" style={styles.input} />
 
       {passwordError ? <HelperText type="error">{passwordError}</HelperText> : null}
 
-      <Button mode="contained" onPress={() => {
-          if (!validateUserId(userId)) {
-            alert("User ID does not meet the requirements.");
-            return;
-          }
-          if (!validatePassword(password)) {
-            alert("Password does not meet the requirements.");
-            return;
-          }
-          if (password !== confirmPassword) {
-            alert("Passwords do not match.");
-            return;
-          }
-          alert("Registration Submitted");
-          navigation.navigate("PoliceScreen"); // Navigate to PoliceScreen
-        }}
-        style={styles.button}
-      >
-        Next
+      <Button mode="contained" onPress={handleRegister} style={styles.button}>
+        Register
       </Button>
+
+
+      
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 32, backgroundColor: "#f5f5f5" },
-    header: { fontSize: 26, fontWeight: "bold", marginBottom: 20, textAlign: "center", color: "#007bff" },
-    input: { marginBottom: 15, backgroundColor: "white" },
-    pickerContainer: { borderWidth: 1, borderColor: "#ccc", borderRadius: 5, marginBottom: 15, backgroundColor: "white", paddingHorizontal: 10 },
-    picker: { height: 50 },
-    label: { fontSize: 16, color: "#333", marginBottom: 3 },
-    button: { marginTop: 0, marginBottom: 53, padding: 6 },
-  });
+  container: { flex: 1, padding: 32, backgroundColor: "#f5f5f5" },
+  header: { fontSize: 26, fontWeight: "bold", marginBottom: 5, textAlign: "center", color: "#007bff" },
+  input: { marginBottom: 15, backgroundColor: "white" },
+  pickerContainer: { borderWidth: 1, borderColor: "#ccc", borderRadius: 5, marginBottom: 15, backgroundColor: "white", paddingHorizontal: 10 },
+  picker: { height: 50 },
+  label: { fontSize: 16, color: "#333", marginBottom: 15 },
+  button: { marginTop: 0, marginBottom: 50, padding: 6 },
+});
 
-export default RegistrationScreen;
+export default PoliceRegistrationScreen;

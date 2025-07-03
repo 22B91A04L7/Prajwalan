@@ -16,9 +16,8 @@ const GovernmentAgencyScreen = () => {
   const options = [
     { name: "NDRF", screen: "NDRFScreen" },
     { name: "Police", screen: "PoliceScreen" },
-    { name: "Medical", screen: "MedicalScreen" },
-    { name: "Metrological", screen: "MetrologicalScreen" },
-    { name: "Revenue", screen: "RevenueScreen" },
+    // { name: "Medical", screen: "MedicalScreen" },
+    
 
   ];
 
